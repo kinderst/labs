@@ -13,6 +13,7 @@ setwd('~/TA stuff/Winter2017/labs/L1-Review/')
 require(dplyr)
 require(knitr)
 require(ggplot2)
+require(magrittr) # for pipe operator
 
 #Read in the dataset
 deaths <- read.csv('flu_deaths.csv')
@@ -26,6 +27,8 @@ This table shows the number of flu and pneumonia deaths by state for 2016-17, wi
 
 ```{r summary, echo=FALSE}
 
+?filter
+
 #Summary table
 deaths_summary <- filter(deaths, geoid == "State", season == "2016-17") %>%
                   select(State, season, Deaths.from.pneumonia.and.influenza) %>%
@@ -38,19 +41,3 @@ kable(deaths_summary)
 
 ```
 
-This plot shows the percent of total deaths in the USA caused by the flu and pnemonia between 2009 and 2017. As can be expected, the 2017 values are quite *low* considering how it is currently early January of 2017.
-
-```{r plot, echo=FALSE}
-
-#Plot
-deaths_plot <- filter(deaths, geoid == "National", age == "65 years and older") %>%
-               select(geoid, age, season, Deaths.from.pneumonia.and.influenza, All.Deaths) %>%
-               group_by(season) %>%
-               summarize(flu_deaths = sum(Deaths.from.pneumonia.and.influenza), 
-                         total_deaths = sum(All.Deaths), 
-                         percent_flu = (flu_deaths / total_deaths * 100))
-
-p <- ggplot(deaths_plot, aes(season, percent_flu))
-p + geom_point()
-
-```
